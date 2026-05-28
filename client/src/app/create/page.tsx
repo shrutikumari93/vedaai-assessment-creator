@@ -6,30 +6,31 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 
-const schema = z.object({
-  title: z.string().min(1, "Assignment title is required"),
-  subject: z.string().min(1, "Subject is required"),
-  dueDate: z.string().min(1, "Due date is required"),
-  questions: z.coerce.number().positive(),
-  marks: z.coerce.number().positive(),
+
+export const schema = z.object({
+  title: z.string().min(1),
+  subject: z.string().min(1),
+  dueDate: z.string().min(1),
+  questions: z.coerce.number().int().positive(),
+  marks: z.coerce.number().int().positive(),
   instructions: z.string().optional(),
 });
 
-type FormData = z.infer<typeof schema>;
+type FormData = z.output<typeof schema>;
 
 export default function CreateAssignmentPage() {
   const [generatedText, setGeneratedText] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<FormData>({
-    resolver: zodResolver(schema),
-  });
-
+  const form = useForm<FormData>({
+  resolver: zodResolver(schema) as any,
+});
+const {
+  register,
+  handleSubmit,
+  reset,
+  formState: { errors },
+} = form;
   const onSubmit = async (data: FormData) => {
     setLoading(true);
 
